@@ -19,7 +19,7 @@ TraceExecutionHandler::TraceExecutionHandler(
       write_opts_(WriteOptions()),
       read_opts_(ReadOptions()) {
   assert(db != nullptr);
-  assert(!handles.empty());
+//  assert(!handles.empty());
   cf_map_.reserve(handles.size());
   for (ColumnFamilyHandle* handle : handles) {
     assert(handle != nullptr);

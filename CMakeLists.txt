@@ -66,7 +66,7 @@ endif(CCACHE_FOUND)
 
 option(WITH_JEMALLOC "build with JeMalloc" OFF)
 option(WITH_LIBURING "build with liburing" ON)
-option(WITH_SNAPPY "build with SNAPPY" OFF)
+option(WITH_SNAPPY "build with SNAPPY" ON)
 option(WITH_LZ4 "build with lz4" OFF)
 option(WITH_ZLIB "build with zlib" OFF)
 option(WITH_ZSTD "build with zstd" OFF)
@@ -705,6 +705,7 @@ set(SOURCES
         db/db_impl/db_impl_experimental.cc
         db/db_impl/db_impl_readonly.cc
         db/db_impl/db_impl_secondary.cc
+        db/db_impl/SimpleResultHandler.cc
         db/db_info_dumper.cc
         db/db_iter.cc
         db/dbformat.cc
@@ -1498,8 +1499,7 @@ if(WITH_TESTS)
       monitoring/thread_status_updater_debug.cc
       table/mock_table.cc
       utilities/agg_merge/test_agg_merge.cc
-      utilities/cassandra/test_utils.cc
-  )
+      utilities/cassandra/test_utils.cc)
   enable_testing()
   add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
   set(TESTUTILLIB testutillib${ARTIFACT_SUFFIX})

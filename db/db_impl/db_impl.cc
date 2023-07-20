@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "SimpleResultHandler.h"
 #include "db/arena_wrapped_db_iter.h"
 #include "db/builder.h"
 #include "db/compaction/compaction_job.h"
@@ -746,27 +747,69 @@ DBImpl::~DBImpl() {
 
   Status s;
   if(all_trace) {
-    s = EndTrace();
-    if (!s.ok()) {
-      fprintf(stderr, "Encountered an error ending the trace, %s\n",
-              s.ToString().c_str());
+//    fprintf(stdout, "STOPPING TRACEEEEEEEEEE\n");
+//    s = EndTrace();
+//    if (!s.ok()) {
+//      fprintf(stderr, "Encountered an error ending the trace, %s\n",
+//              s.ToString().c_str());
+//    }
+
+
+//    s = EndBlockCacheTrace();
+//    if (!s.ok()) {
+//      fprintf(stderr,
+//              "Encountered an error ending the block cache tracing, %s\n",
+//              s.ToString().c_str());
+//    }
+//
+//
+//    s = EndIOTrace();
+//    if (!s.ok()) {
+//      fprintf(stderr,
+//              "Encountered an error ending the io tracing, %s\n",
+//              s.ToString().c_str());
+//    }
+
+    std::vector<ColumnFamilyHandle*> handles;
+    fprintf(stdout, "Replaying....\n");
+
+    /* Open db and get db handles */
+
+    // Create TraceReader
+    std::string trace_path = "/tmp/op_trace_file";
+    std::unique_ptr<TraceReader> trace_reader;
+    s = NewFileTraceReader(this->GetEnv(), EnvOptions(), trace_path, &trace_reader);
+
+    // Create Replayer
+    std::unique_ptr<Replayer> replayer;
+    s = this->NewDefaultReplayer(handles, std::move(trace_reader), &replayer);
+
+    s = replayer->Prepare();
+
+//    SimpleResultHandler handler;
+//    SimpleResultHandler handler;
+
+    /* For auto-replay */
+    // Result callback for auto-replay
+//    auto res_cb = [&handler](Status st, std::unique_ptr<TraceRecordResult>&& res) {
+//      // res == nullptr if !st.ok()
+//      if (res != nullptr) {
+//        res->Accept(&handler);
+//      }
+//    };
+
+    s = replayer->Replay(ReplayOptions(1, 1.0), nullptr);
+    replayer.reset();
+    if (s.ok()) {
+      fprintf(stdout, "Replay completed from trace_file: tmp_op_trace \n");
+    } else {
+      fprintf(stderr, "Replay failed. Error: %s\n", s.ToString().c_str());
     }
 
-
-    s = EndBlockCacheTrace();
-    if (!s.ok()) {
-      fprintf(stderr,
-              "Encountered an error ending the block cache tracing, %s\n",
-              s.ToString().c_str());
-    }
-
-
-    s = EndIOTrace();
-    if (!s.ok()) {
-      fprintf(stderr,
-              "Encountered an error ending the io tracing, %s\n",
-              s.ToString().c_str());
-    }
+//    fprintf(stdout, "Total traceswlwlwlw: [%lu]\n",
+//            handler.GetCount());
+//    fprintf(stdout, "Average latency: [%f]\n",
+//            handler.GetAvgLatency());
 
 
   }

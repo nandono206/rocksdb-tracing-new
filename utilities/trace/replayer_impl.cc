@@ -139,6 +139,7 @@ Status ReplayerImpl::Replay(
       }
 
       if (result_callback == nullptr) {
+//        fprintf(stdout, "FROM REPLAYER \n");
         s = Execute(record, nullptr);
       } else {
         std::unique_ptr<TraceRecordResult> res;

@@ -3653,7 +3653,7 @@ class Benchmark {
                     s.ToString().c_str());
             ErrorExit();
           }
-          fprintf(stdout, "Tracing the workload to: [%s]\n",
+          fprintf(stdout, "Tracing the workload toDBBENCHHH: [%s]\n",
                   FLAGS_trace_file.c_str());
         }
         // Start block cache tracing.
